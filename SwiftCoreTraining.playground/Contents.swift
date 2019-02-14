@@ -57,18 +57,18 @@ extension Sequence {
         return item
     }
     
-//    public func barisReversed() -> [Element]? {
-//        var result = [Element]()
-//
-//        if count < 1 {
-//            return nil
-//        }
-//
-//        for e in self {
-//            result = [e, ...result]
-//        }
-//        return result
-//    }
+    public func barisReversed() -> [Element]? {
+        
+        if count < 1 {
+            return nil
+        }
+        var result = [Element]()
+
+        for e in self {
+            result.insert(e, at: 0)
+        }
+        return result
+    }
 }
 
 extension Sequence where Element: Comparable {
@@ -123,3 +123,6 @@ print(schoolArray.barisMax() ?? School())
 print(intArray.barisReduce(item: 0, where: { a, b in
     a + b
 }))
+
+
+print([Int]().barisReversed())
