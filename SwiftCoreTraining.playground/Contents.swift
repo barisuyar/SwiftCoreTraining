@@ -6,15 +6,17 @@ extension Sequence {
     
     var first: Element? {
         var element: Element?
-        self.forEach { element = $0
-            return
+        
+        for item in self {
+            element = item
+            break
         }
         return element }
     
     public func barisMap<Item> ( _ transform: (Element) throws -> Item) rethrows -> [Item] {
         var result = [Item]()
         
-        try self.forEach {
+        try forEach {
             result.append(try transform($0))
         }
         return result
@@ -41,7 +43,7 @@ extension Sequence {
     public func barisFilter<Item> (where predicate: (Element) throws -> Bool) rethrows -> [Item] where Self.Element == Item {
         var result = [Item]()
         
-        try self.forEach { item in
+        try forEach { item in
             if try predicate(item) {
                 result.append(item)
             }
@@ -69,6 +71,60 @@ extension Sequence {
         }
         return result
     }
+    
+    public func barisFirst(where predicate: (Element) throws -> Bool) rethrows -> Element? {
+        var element: Element?
+        
+        for item in self {
+            if try predicate(item) {
+                element = item
+                break
+            }
+        }
+        
+        return element
+    }
+    
+    public func barisLast(where predicate: (Element) throws -> Bool) rethrows -> Element? {
+        var element: Element?
+        if let reversedArray = self.barisReversed() {
+            for item in reversedArray {
+                if try predicate(item) {
+                    element = item
+                    break
+                }
+                
+            }
+        }
+        return element
+    }
+    
+    public func barisEnumarated() -> [(Int, Element)]? {
+        if self.count < 1 {
+            return nil
+        }
+        
+        var i = 0
+        var enumaratedArray = [(Int, Element)]()
+        for item in self {
+            enumaratedArray.append((i, item))
+            i = i + 1
+        }
+        return enumaratedArray
+    }
+    
+    public func barisCompactMap<ResultElement>(_ transform: (Element) throws -> ResultElement?) rethrows -> [ResultElement] {
+        var array = [ResultElement]()
+        
+        for item in self {
+            if let a = try transform(item) {
+                array.append(a)
+            }
+        }
+        
+        return array
+    }
+    
 }
 
 extension Sequence where Element: Comparable {
@@ -115,14 +171,11 @@ extension School: Comparable {
 
 var schoolArray = [School(name: "Anaokulu", code: 0), School(name: "İlkokul", code: 1), School(name: "Ortaokul", code: 2), School(name: "Lise", code: 3), School(name: "Üniversite", code: 4)]
 
-var intArray = [1,2,3,4,5,6]
+var intArray = [1,2,3,0,5,17,7,8,9,10,4]
 
 var schoolArray2: [School]?
-print(schoolArray.barisMax() ?? School())
 
-print(intArray.barisReduce(item: 0, where: { a, b in
-    a + b
-}))
+let possibleNumbers = ["1", "2", "three", "///4///", "5"]
 
-
-print([Int]().barisReversed())
+print(possibleNumbers.barisCompactMap( { str in Int(str) } ))
+print(possibleNumbers.compactMap({ str in Int(str) } ))
